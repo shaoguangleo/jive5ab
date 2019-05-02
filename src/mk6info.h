@@ -28,6 +28,7 @@ typedef std::map<std::string, patternlist_type> groupdef_type;
 
 typedef std::list<std::string>                  scanlist_type;
 
+
 // We need to deal a bit with IPv4 addresses
 extern const struct sockaddr_in                 noSender;
 // equality based on IPv4 addr and port and sort by IPv4 address, then by port
@@ -136,6 +137,10 @@ class datastream_mgmt_type {
         datastream_id vdif2stream_id(uint16_t station_id, uint16_t thread_id);
         datastream_id vdif2stream_id(uint16_t station_id, uint16_t thread_id, struct sockaddr_in const& sender);
 
+        // given a tag (datastream_id) return its name.
+        // empty string implies no datastream associated with the tag
+        std::string const& streamid2name( datastream_id dsid ) const;
+
     private:
         // Why do have several data members/mappings?
         datastreamlist_type  defined_datastreams;
@@ -145,6 +150,10 @@ class datastream_mgmt_type {
 };
 
 
+// HV: May 2019 Currently we have the minimum block size for Mk6/FlexBuff
+//              recording formats hardcoded. Let's build in a backdoor such
+//              that we can change those defaults from the commandline
+typedef std::map<bool, unsigned int> size_map_type;
 
 struct mk6info_type {
     // We should discriminate between default disk location and
@@ -157,6 +166,7 @@ struct mk6info_type {
                                               // wether to record in mk6 format or not.
                                               // can be altered at runtime using
                                               //  "record=mk6:[1|0]"
+    static size_map_type    minBlockSizeMap;  // Minimum block size for <true> (==Mk6) and <false> (==vbs)
 
     // Indicate wether we're running in Mark6 compatibility mode
     // default: of course not, d'oh!
