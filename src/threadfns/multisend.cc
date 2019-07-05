@@ -3,6 +3,7 @@
 #include <mk5_exception.h>
 #include <evlbidebug.h>
 #include <getsok.h>
+#include <mk6info.h>
 #include <getsok_udt.h>
 #include <threadutil.h>
 #include <auto_array.h>
@@ -1163,6 +1164,9 @@ int mkpath(const char* file_path_in, mode_t mode) {
                 ::free( file_path );
                 return -1;
             }
+        } else {
+            // If succesfully created dir, potentially change ownership!
+            mk6info_type::chown_fn(file_path, mk6info_type::real_user_id, -1);
         }
 
         *p='/';
@@ -1281,6 +1285,9 @@ void parallelwriter(inq_type<chunk_type>* inq, sync_type<multifileargs>* args) {
                     MARK_MOUNTPOINT_BAD("Failed to open " << fn << " - " << evlbi5a::strerror(errno) << endl)
                     continue;
                 }
+                // Need to change owership, potentially. If that fails, we has an issues?
+                ASSERT2_ZERO( mk6info_type::fchown_fn(fd, mk6info_type::real_user_id, -1),
+                              SCINFO("Failed to change ownership of newly created file " <<fn) );
 
                 if( mk6 ) {
                     // If Mark6, we better write the file header. Because we *have*
