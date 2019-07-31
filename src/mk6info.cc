@@ -161,7 +161,6 @@ std::ostream& operator<<(std::ostream& os, vdif_key const& vk) {
 
 // datastream management is encapsulated in one class
 void datastream_mgmt_type::add(std::string const& nm, std::string const& mc) {
-DEBUG(0, "datastream_mgmt::add(" << nm << ") - currently we have " << defined_datastreams.size() << " streams defined" << endl);
     // check if not already defined
     if( defined_datastreams.find(nm)!=defined_datastreams.end() )
         THROW_EZEXCEPT(datastreamexception_type, "The data stream '" << nm << "' already has a definition");
@@ -169,7 +168,6 @@ DEBUG(0, "datastream_mgmt::add(" << nm << ") - currently we have " << defined_da
     std::pair<datastreamlist_type::iterator, bool> insres = defined_datastreams.insert( std::make_pair(nm, datastream_type(mc)) );
     if( !insres.second )
         THROW_EZEXCEPT(datastreamexception_type, "Failed to insert he data stream '" << nm << "' ??? (internal error in std::map?)");
-DEBUG(0, "datastream_mgmt::add(" << nm << ") - done! currently we have " << defined_datastreams.size() << " streams defined" << endl);
 }
 
 
